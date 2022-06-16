@@ -59,11 +59,15 @@ contract MyAwesomeNft is ERC721URIStorage, IMintableERC721, IERC721Supply {
 }
 ```
 
+<br/>
+
 <h4>ERC721URIStorage</h4>
 
 This contract comes from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/erc721#constructing_an_erc721_token_contract) and is an implementation of ERC-721 NFT standard that comes with metadata about each token, by using the `_setTokenURI` function.
 
 This means, that inside our `mintTo` function (whenever a new NFT is created), we can set the metadata of the token, so that each NFT can have a name, description, image, and properties.
+
+<br/>
 
 <h4>IMintableERC721</h4>
 
@@ -77,7 +81,13 @@ When we deploy our contract, we'll see this button:
 
 Then we can simply fill out a form with our NFT information, and mint that NFT on the dashboard, no code required.
 
-![thirdweb dashboard mint form](mint-nft-form.png)
+<div align='center' >
+
+<img alt='thirdweb dashboard mint button' src='./mint-nft-form.png' height='500'>
+
+</div>
+
+<br/>
 
 **2. The mint function in the thirdweb SDK**
 
@@ -88,6 +98,8 @@ await contract.nft.mint.to(walletAddress, nftMetadata);
 ```
 
 This one line will upload our NFT metadata to IPFS, and then mint the NFT on the blockchain.
+
+<br/>
 
 <h4>IERC721Supply</h4>
 
@@ -100,6 +112,8 @@ In the SDK, we can query all NFTs that have been minted, and get their metadata,
 ```jsx
 const nfts = await contract.nft.query.all();
 ```
+
+<br/>
 
 ### The Mint & Total Supply Functions
 
@@ -132,6 +146,16 @@ Finally, we emit an event that the token has been minted, and return the token I
 emit TokensMinted(to, newTokenId, uri);
 
 return newTokenId;
+```
+
+<br/>
+
+**totalSupply**:
+
+This function returns the current token ID, effectively returning the total supply of NFTs.
+
+```solidity
+return _tokenIds.current();
 ```
 
 <h3>Deploying the contract</h3>
