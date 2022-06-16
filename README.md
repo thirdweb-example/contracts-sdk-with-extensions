@@ -47,9 +47,9 @@ Let's explore how the [NFT Collection Smart Contract](./contract/contracts/MyAwe
 
 Our contract implements three other contracts/interfaces:
 
-1. `ERC721URIStorage`
-2. `IMintableERC721`
-3. `IERC721Supply`
+1. `ERC721URIStorage` - [OpenZeppelin Contract](https://docs.openzeppelin.com/contracts/4.x/erc721#constructing_an_erc721_token_contract)
+2. `IMintableERC721` - [thirdweb Contract Extension](https://portal.thirdweb.com/thirdweb-deploy/contract-extensions/erc721#erc721mintable)
+3. `IERC721Supply` - [thirdweb Contract Extension](https://portal.thirdweb.com/thirdweb-deploy/contract-extensions/erc721#erc721supply)
 
 As you can see in the contract definition:
 
@@ -63,9 +63,9 @@ contract MyAwesomeNft is ERC721URIStorage, IMintableERC721, IERC721Supply {
 
 <h4>ERC721URIStorage</h4>
 
-This contract comes from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/erc721#constructing_an_erc721_token_contract) and is an implementation of ERC-721 NFT standard that comes with metadata about each token, by using the `_setTokenURI` function.
+This contract comes from [OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/erc721#constructing_an_erc721_token_contract) and is an implementation of ERC-721 NFT standard that includes metadata about each token, by using the `_setTokenURI` function.
 
-This means, that inside our `mintTo` function (whenever a new NFT is created), we can set the metadata of the token, so that each NFT can have a name, description, image, and properties.
+Inside our `mintTo` function (whenever a new NFT is created), we can set the `tokenURI` to point to an IPFS url containing metadata; so that each NFT can have a name, description, image, and properties.
 
 <br/>
 
@@ -134,7 +134,7 @@ _mint(to, newTokenId);
 _setTokenURI(newTokenId, uri);
 ```
 
-Then, we increment the current token ID, so that the next token ID is the next one:
+Then, we increment the current token ID, so that the next token ID is correct:
 
 ```solidity
 _tokenIds.increment();
@@ -157,6 +157,8 @@ This function returns the current token ID, effectively returning the total supp
 ```solidity
 return _tokenIds.current();
 ```
+
+<br/>
 
 <h3>Deploying the contract</h3>
 
@@ -190,7 +192,7 @@ We configure the desired blockchain/network in the [`_app.js`](./application/pag
 const activeChainId = ChainId.Goerli;
 ```
 
-Now we can easily call the functions of our [`Greeter`](./contract/contracts/MyAwesomeNft.sol) that we enabled by implementing thirdweb's contract extensions.
+Now we can easily call the functions of our [`NFT Collection contract`](./contract/contracts/MyAwesomeNft.sol) that we enabled by implementing thirdweb's contract extensions.
 
 ```jsx
 // Get all NFTs
@@ -208,3 +210,8 @@ await contract?.nft.mint.to(address, {
 To perform a "write" operation (a transaction on the blockchain), we need to have a connected wallet, so we can use their **signer** to sign the transaction.
 
 To connect a user's wallet, we use one of thirdweb's [wallet connection hooks](https://portal.thirdweb.com/react/category/wallet-connection). The SDK automatically detects the connected wallet and uses it to sign transactions. This works because our application is wrapped in the [`ThirdwebProvider`](https://portal.thirdweb.com/react/react.thirdwebprovider), as seen in the [`_app.js`](./application/pages/_app.js) file.
+
+```jsx
+const address = useAddress();
+const connectWithMetamask = useMetamask();
+```
