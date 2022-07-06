@@ -4,7 +4,7 @@
 
 <h1 align='center'>Create an NFT collection with Solidity + thirdweb</h1>
 
-<p align='center'>This template allows you to create an NFT Collection using Solidity and thirdweb.
+<p align='center'>This template allows you to create an NFT Collection using Solidity and thirdweb.</p>
 
 <br />
 
