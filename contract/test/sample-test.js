@@ -10,7 +10,12 @@ describe("Greeter", function () {
     const nftContractFactory = await hre.ethers.getContractFactory(
       "MyAwesomeNft"
     );
-    const nftContract = await nftContractFactory.deploy();
+    const nftContract = await nftContractFactory.deploy(
+      "name",
+      "symbol",
+      testAccount.address,
+      500
+    );
     await nftContract.deployed();
 
     // Mint an NFT to the test account

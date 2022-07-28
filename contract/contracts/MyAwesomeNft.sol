@@ -1,31 +1,24 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import "@thirdweb-dev/contracts/feature/interface/IMintableERC721.sol";
-import "@thirdweb-dev/contracts/eip/interface/IERC721Supply.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@thirdweb-dev/contracts/base/ERC721Base.sol";
+import "@thirdweb-dev/contracts/extension/PermissionsEnumerable.sol";
 
-contract MyAwesomeNft is ERC721URIStorage, IMintableERC721, IERC721Supply {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-
-    constructor() ERC721("Awesome NFTs", "AWSM") {}
-
-    function totalSupply() external view override returns (uint256) {
-        return _tokenIds.current();
-    }
-
-    function mintTo(address to, string calldata uri) external override returns (uint256) {
-        uint256 newTokenId = _tokenIds.current();
-
-        _mint(to, newTokenId);
-        _setTokenURI(newTokenId, uri);
-
-        _tokenIds.increment();
-
-        emit TokensMinted(to, newTokenId, uri);
-
-        return newTokenId;
+contract MyAwesomeNft is ERC721Base, PermissionsEnumerable {
+      constructor(
+        string memory _name,
+        string memory _symbol,
+        address _royaltyRecipient,
+        uint128 _royaltyBps
+    )
+        ERC721Base(
+            _name,
+            _symbol,
+            _royaltyRecipient,
+            _royaltyBps
+        )
+    {
+        // Give the contract deployer the "admin" role when the contract is deployed.
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 }

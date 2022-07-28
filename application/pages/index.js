@@ -7,8 +7,9 @@ import {
   useNetworkMismatch,
   ThirdwebNftMedia,
   ChainId,
+  useNFTs,
+  useMintNFT,
 } from "@thirdweb-dev/react";
-import { useEffect, useState } from "react";
 import styles from "../styles/Theme.module.css";
 
 export default function Home() {
@@ -19,24 +20,18 @@ export default function Home() {
   const isWrongNetwork = useNetworkMismatch();
   const [, switchNetwork] = useNetwork();
 
+  // Read the contract from the blockchain
   const { contract } = useContract(
-    "0xC4EE6D5B10D4d37648777570F4c0e09974B1559b"
+    "0xe0F5f8Bb09627B0A886D4CBd300Ba36cd9E522c6"
   );
 
-  const [loading, setLoading] = useState(true);
-  const [nfts, setNfts] = useState([]);
+  // Read the NFTs from the contract
+  const { data: nfts, isLoading: loading } = useNFTs(contract?.nft);
 
-  console.log(nfts);
+  // Function to mint a new NFT
+  const { mutate: mintNft, isLoading: minting } = useMintNFT(contract?.nft);
 
-  useEffect(() => {
-    (async () => {
-      if (!contract) return;
-      setNfts(await contract?.nft.query.all());
-      setLoading(false);
-    })();
-  }, [contract]);
-
-  async function mintNft() {
+  async function mintAnNft() {
     if (!address) {
       connectWithMetamask();
       return;
@@ -47,13 +42,21 @@ export default function Home() {
       return;
     }
 
-    await contract?.nft.mint.to(address, {
-      name: "Yellow Star",
-      image:
-        "https://gateway.ipfscdn.io/ipfs/QmZbovNXznTHpYn2oqgCFQYP4ZCpKDquenv5rFCX8irseo/0.png",
-    });
-
-    alert(`🚀 Successfully Minted NFT!`);
+    mintNft(
+      {
+        metadata: {
+          name: "Yellow Star",
+          image:
+            "https://gateway.ipfscdn.io/ipfs/QmZbovNXznTHpYn2oqgCFQYP4ZCpKDquenv5rFCX8irseo/0.png",
+        },
+        to: address,
+      },
+      {
+        onSuccess(data) {
+          alert(`🚀 Successfully Minted NFT!`);
+        },
+      }
+    );
   }
 
   return (
@@ -89,10 +92,10 @@ export default function Home() {
       )}
 
       <button
-        onClick={mintNft}
+        onClick={mintAnNft}
         className={`${styles.mainButton} ${styles.spacerTop}`}
       >
-        Mint NFT
+        {minting ? "Minting..." : "Mint NFT"}
       </button>
     </div>
   );
