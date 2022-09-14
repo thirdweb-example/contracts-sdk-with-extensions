@@ -9,5 +9,10 @@
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.8",
     "hardhat": "^2.9.9"
+  },
+  "scripts": {
+    "build": "npx thirdweb@latest detect",
+    "release": "npx thirdweb@latest release",
+    "deploy": "npx thirdweb@latest deploy"
   }
 }

@@ -1,79 +1,22 @@
 import {
-  useAddress,
   useContract,
-  useDisconnect,
-  useMetamask,
-  useNetwork,
-  useNetworkMismatch,
   ThirdwebNftMedia,
-  ChainId,
   useNFTs,
-  useMintNFT,
+  Web3Button,
 } from "@thirdweb-dev/react";
 import styles from "../styles/Theme.module.css";
 
+const contractAddress = "0xe0F5f8Bb09627B0A886D4CBd300Ba36cd9E522c6";
+
 export default function Home() {
-  const address = useAddress();
-  const connectWithMetamask = useMetamask();
-  const disconnectWallet = useDisconnect();
-
-  const isWrongNetwork = useNetworkMismatch();
-  const [, switchNetwork] = useNetwork();
-
   // Read the contract from the blockchain
-  const { contract } = useContract(
-    "0xe0F5f8Bb09627B0A886D4CBd300Ba36cd9E522c6"
-  );
+  const { contract } = useContract(contractAddress);
 
   // Read the NFTs from the contract
-  const { data: nfts, isLoading: loading } = useNFTs(contract?.nft);
-
-  // Function to mint a new NFT
-  const { mutate: mintNft, isLoading: minting } = useMintNFT(contract?.nft);
-
-  async function mintAnNft() {
-    if (!address) {
-      connectWithMetamask();
-      return;
-    }
-
-    if (isWrongNetwork) {
-      switchNetwork(ChainId.Goerli);
-      return;
-    }
-
-    mintNft(
-      {
-        metadata: {
-          name: "Yellow Star",
-          image:
-            "https://gateway.ipfscdn.io/ipfs/QmZbovNXznTHpYn2oqgCFQYP4ZCpKDquenv5rFCX8irseo/0.png",
-        },
-        to: address,
-      },
-      {
-        onSuccess(data) {
-          alert(`🚀 Successfully Minted NFT!`);
-        },
-      }
-    );
-  }
+  const { data: nfts, isLoading: loading } = useNFTs(contract);
 
   return (
     <div className={styles.container}>
-      {address ? (
-        <>
-          <a onClick={disconnectWallet} className={styles.secondaryButton}>
-            Disconnect Wallet
-          </a>
-          <p>Your address: {address}</p>
-        </>
-      ) : (
-        <a onClick={connectWithMetamask} className={styles.secondaryButton}>
-          Connect Wallet
-        </a>
-      )}
-
       {!loading ? (
         <div className={styles.nftBoxGrid}>
           {nfts?.map((nft) => (
@@ -91,12 +34,21 @@ export default function Home() {
         <p>Loading NFTs...</p>
       )}
 
-      <button
-        onClick={mintAnNft}
-        className={`${styles.mainButton} ${styles.spacerTop}`}
+      <Web3Button
+        colorMode="dark"
+        accentColor="#F213A4"
+        contractAddress={contractAddress}
+        action={(contract) =>
+          contract.erc721.mint({
+            name: "Yellow Star",
+            image:
+              "https://gateway.ipfscdn.io/ipfs/QmZbovNXznTHpYn2oqgCFQYP4ZCpKDquenv5rFCX8irseo/0.png",
+          })
+        }
+        onSuccess={() => alert(`🚀 Successfully Minted NFT!`)}
       >
-        {minting ? "Minting..." : "Mint NFT"}
-      </button>
+        Mint NFT
+      </Web3Button>
     </div>
   );
 }
